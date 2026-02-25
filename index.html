@@ -3,108 +3,265 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ultimate PhD Hub</title>
+    <title>PhD Dashboard</title>
     <link rel="stylesheet" href="./ui/styles.css" />
   </head>
   <body>
-    <div class="bg-rays" aria-hidden="true"></div>
-
-    <header class="hero">
-      <p class="kicker">THANK YOU FOR YOUR PURCHASE!</p>
-      <h1>Ultimate PhD Notion Template</h1>
-      <p class="hero-sub">A GitHub-hosted mirror inspired by your screenshot template — built to be edited in the GitHub web interface.</p>
-      <div class="hero-actions">
-        <a class="pill" href="#dashboard">Click to access the template</a>
-        <a class="pill" href="#walkthrough">Scroll on for the walk-through</a>
-      </div>
-    </header>
-
-    <main>
-      <section class="panel" id="dashboard">
-        <h2>Dashboard</h2>
-        <p class="lead">This is the core hub linking all workspace databases — similar to the central Notion dashboard shown in your images.</p>
-
-        <div class="db-grid">
-          <a class="db-card" href="./tasks/_index.md">
-            <h3>⭐ Tasks</h3>
-            <p>Master task database with status, priority, due dates, and board view.</p>
-          </a>
-          <a class="db-card" href="./research/projects-overview.md">
-            <h3>🗂️ Projects Overview</h3>
-            <p>Track overarching projects, related thesis chapters, and linked papers.</p>
-          </a>
-          <a class="db-card" href="./research/meeting-seminar-notes/_index.md">
-            <h3>🧪 Meeting & Seminar Notes</h3>
-            <p>Capture notes by date, type, attendees, and action points.</p>
-          </a>
-          <a class="db-card" href="./research/literature-notes/_index.md">
-            <h3>📚 Literature Notes</h3>
-            <p>Keep summaries, key findings, and critiques of papers you read.</p>
-          </a>
-          <a class="db-card" href="./papers/papers-overview.md">
-            <h3>📝 Papers Overview</h3>
-            <p>Organize active/submitted/published manuscripts with stage filters.</p>
-          </a>
-          <a class="db-card" href="./dissertation/overview.md">
-            <h3>🎓 Thesis Overview</h3>
-            <p>Manage chapter status, word-count milestones, and writing workflow.</p>
-          </a>
-          <a class="db-card" href="./career/publication-record.md">
-            <h3>🏅 Publication Record</h3>
-            <p>Store publication links and preparation notes for dissemination.</p>
-          </a>
-          <a class="db-card" href="./career/opportunities.md">
-            <h3>🚀 Opportunities</h3>
-            <p>Track awards, scholarships, talks, outreach, and career actions.</p>
-          </a>
-          <a class="db-card" href="./career/professional-contacts.md">
-            <h3>🤝 Professional Contacts</h3>
-            <p>Your personal CRM for collaborators, supervisors, and network follow-ups.</p>
-          </a>
+    <main class="page">
+      <header class="topbar">
+        <div>
+          <p class="crumb">Second-year Economics PhD</p>
+          <h1>Research Dashboard</h1>
+          <p class="subtitle">A Notion-style workspace for seminars, paper notes, project progress, and deadlines.</p>
         </div>
+        <button id="reset-data" class="ghost-btn" type="button">Reset demo data</button>
+      </header>
+
+      <section class="quick-grid" aria-label="quick links">
+        <a class="quick-card" href="#seminars">🗒️ Seminar Notes</a>
+        <a class="quick-card" href="#papers">📚 Paper Reading Notes</a>
+        <a class="quick-card" href="#projects">📈 Projects & Papers</a>
+        <a class="quick-card" href="#todos">✅ Todos & Deadlines</a>
       </section>
 
-      <section class="panel" id="walkthrough">
-        <h2>Walk-through</h2>
-        <p class="lead">This mirrors the guided explanation style in the screenshots, but in a cleaner web layout.</p>
-
-        <div class="flow">
-          <article>
-            <h3>1) Start at the Dashboard</h3>
-            <p>Use the dashboard as your command center. It provides one-click access to each database and subpage.</p>
-          </article>
-          <article>
-            <h3>2) Use database views</h3>
-            <p>Each area is treated as a database: Projects, Notes, Literature, Papers, Thesis, Career. Keep each page updated weekly.</p>
-          </article>
-          <article>
-            <h3>3) Link everything together</h3>
-            <p>As in your template, tasks connect to papers and chapters, so progress is visible both by project and by deadline.</p>
-          </article>
-          <article>
-            <h3>4) Work paper-by-paper and chapter-by-chapter</h3>
-            <p>Open each specific paper/chapter page for detailed sections, protocols, figures, notes, and writing status.</p>
-          </article>
-          <article>
-            <h3>5) Keep career pages live</h3>
-            <p>Publication record, opportunities, and contacts act as your outward-facing planning layer.</p>
-          </article>
+      <section class="database" id="seminars">
+        <div class="database-head">
+          <div>
+            <h2>Seminar & Discussion Notes</h2>
+            <p class="hint">Edit any cell directly, then click Save note to open details like a Notion sub-page.</p>
+          </div>
+          <button class="add-row" type="button" data-add-row="seminars">+ New row</button>
         </div>
+        <div class="table-wrap" id="table-seminars"></div>
       </section>
 
-      <section class="panel panel-soft">
-        <h2>Edit in GitHub (No CLI)</h2>
-        <ol>
-          <li>Open any linked page above.</li>
-          <li>Click <strong>Edit this file</strong> (pencil icon).</li>
-          <li>Update table rows and notes.</li>
-          <li>Commit your changes directly in GitHub.</li>
-        </ol>
+      <section class="database" id="papers">
+        <div class="database-head">
+          <div>
+            <h2>Paper Reading Notes</h2>
+            <p class="hint">Add one row per paper. Save note stores rich details you can reopen later.</p>
+          </div>
+          <button class="add-row" type="button" data-add-row="papers">+ New row</button>
+        </div>
+        <div class="table-wrap" id="table-papers"></div>
+      </section>
+
+      <section class="database" id="projects">
+        <div class="database-head">
+          <div>
+            <h2>Projects & Working Papers</h2>
+            <p class="hint">Track stage, next milestone, and shared doc links.</p>
+          </div>
+          <button class="add-row" type="button" data-add-row="projects">+ New row</button>
+        </div>
+        <div class="table-wrap" id="table-projects"></div>
+      </section>
+
+      <section class="database" id="todos">
+        <div class="database-head">
+          <div>
+            <h2>Todos & Deadlines</h2>
+            <p class="hint">Keep weekly priorities and hard deadlines in one place.</p>
+          </div>
+          <button class="add-row" type="button" data-add-row="todos">+ New row</button>
+        </div>
+        <div class="table-wrap" id="table-todos"></div>
       </section>
     </main>
 
-    <footer>
-      <p>Need support or have feedback? Click here!</p>
-    </footer>
+    <dialog id="note-dialog">
+      <form method="dialog" class="note-form">
+        <h3 id="note-title">Edit note</h3>
+        <textarea id="note-text" rows="12" placeholder="Write detailed notes here..."></textarea>
+        <div class="dialog-actions">
+          <button id="save-note" type="button" class="primary-btn">Save note</button>
+          <button type="submit" class="ghost-btn">Close</button>
+        </div>
+      </form>
+    </dialog>
+
+    <template id="db-template">
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Status</th>
+            <th>Due / Date</th>
+            <th>Notes</th>
+            <th>URL</th>
+            <th>Open URL</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </template>
+
+    <script>
+      const STORAGE_KEY = "phd_dashboard_v3";
+      const sections = ["seminars", "papers", "projects", "todos"];
+      const emptyRow = { item: "", status: "", date: "", notes: "", url: "", fullNote: "" };
+
+      const seed = {
+        seminars: [
+          { item: "Macro seminar: labor markets", status: "Planned", date: "", notes: "Add discussant points", url: "", fullNote: "" },
+          { item: "Advisor meeting", status: "Active", date: "", notes: "Bring identification strategy update", url: "", fullNote: "" }
+        ],
+        papers: [
+          { item: "Autor et al. (2020)", status: "Reading", date: "", notes: "Focus on empirical design", url: "", fullNote: "" },
+          { item: "Chetty et al. (2014)", status: "Done", date: "", notes: "Compare data limitations", url: "", fullNote: "" }
+        ],
+        projects: [
+          { item: "Job search frictions paper", status: "Drafting", date: "", notes: "Finish robustness table", url: "", fullNote: "" },
+          { item: "Trade shocks project", status: "Data cleaning", date: "", notes: "Merge county panel", url: "", fullNote: "" }
+        ],
+        todos: [
+          { item: "Submit abstract", status: "High", date: "", notes: "Conference portal", url: "", fullNote: "" },
+          { item: "RA check-in", status: "Medium", date: "", notes: "Share task list", url: "", fullNote: "" }
+        ]
+      };
+
+      const dialog = document.getElementById("note-dialog");
+      const noteText = document.getElementById("note-text");
+      const noteTitle = document.getElementById("note-title");
+      let activeNoteRef = null;
+
+      function loadState() {
+        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || structuredClone(seed);
+        sections.forEach((key) => {
+          stored[key] = Array.isArray(stored[key]) ? stored[key].map((row) => ({ ...emptyRow, ...row })) : [];
+        });
+        return stored;
+      }
+
+      const state = loadState();
+
+      function save() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function validUrl(value) {
+        if (!value.trim()) return "";
+        try {
+          const normalized = value.startsWith("http") ? value : `https://${value}`;
+          return new URL(normalized).toString();
+        } catch {
+          return "";
+        }
+      }
+
+      function addRow(key) {
+        state[key].push({ ...emptyRow });
+        save();
+        renderAll();
+      }
+
+      function removeRow(key, rowIndex) {
+        state[key].splice(rowIndex, 1);
+        save();
+        renderAll();
+      }
+
+      function openNoteEditor(key, rowIndex) {
+        activeNoteRef = { key, rowIndex };
+        const row = state[key][rowIndex];
+        noteTitle.textContent = `Note: ${row.item || "Untitled item"}`;
+        noteText.value = row.fullNote || "";
+        dialog.showModal();
+      }
+
+      function saveNote() {
+        if (!activeNoteRef) return;
+        const { key, rowIndex } = activeNoteRef;
+        state[key][rowIndex].fullNote = noteText.value;
+        state[key][rowIndex].notes = noteText.value.split("\n")[0].slice(0, 80);
+        save();
+        dialog.close();
+        renderAll();
+      }
+
+      function renderTable(mountId, key) {
+        const mount = document.getElementById(mountId);
+        const tmpl = document.getElementById("db-template").content.firstElementChild.cloneNode(true);
+        const tbody = tmpl.querySelector("tbody");
+
+        state[key].forEach((row, rowIndex) => {
+          const tr = document.createElement("tr");
+
+          ["item", "status", "date", "notes", "url"].forEach((field) => {
+            const td = document.createElement("td");
+            const input = document.createElement("input");
+            input.value = row[field] || "";
+            input.type = field === "date" ? "date" : "text";
+            input.placeholder = field === "url" ? "https://..." : "";
+            input.addEventListener("input", (e) => {
+              state[key][rowIndex][field] = e.target.value;
+              if (field === "url") {
+                const next = validUrl(e.target.value);
+                open.href = next || "#";
+                open.classList.toggle("disabled", !next);
+              }
+              save();
+            });
+            td.appendChild(input);
+            tr.appendChild(td);
+          });
+
+          const openCell = document.createElement("td");
+          const open = document.createElement("a");
+          const next = validUrl(row.url || "");
+          open.href = next || "#";
+          open.target = "_blank";
+          open.rel = "noreferrer";
+          open.textContent = "Open";
+          open.className = `open-link ${next ? "" : "disabled"}`;
+          openCell.appendChild(open);
+          tr.appendChild(openCell);
+
+          const actionsCell = document.createElement("td");
+          actionsCell.className = "actions";
+
+          const noteBtn = document.createElement("button");
+          noteBtn.type = "button";
+          noteBtn.className = "small-btn";
+          noteBtn.textContent = "View note";
+          noteBtn.addEventListener("click", () => openNoteEditor(key, rowIndex));
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.type = "button";
+          deleteBtn.className = "small-btn danger";
+          deleteBtn.textContent = "Delete";
+          deleteBtn.addEventListener("click", () => removeRow(key, rowIndex));
+
+          actionsCell.appendChild(noteBtn);
+          actionsCell.appendChild(deleteBtn);
+          tr.appendChild(actionsCell);
+          tbody.appendChild(tr);
+        });
+
+        mount.innerHTML = "";
+        mount.appendChild(tmpl);
+      }
+
+      function renderAll() {
+        renderTable("table-seminars", "seminars");
+        renderTable("table-papers", "papers");
+        renderTable("table-projects", "projects");
+        renderTable("table-todos", "todos");
+      }
+
+      renderAll();
+
+      document.querySelectorAll("[data-add-row]").forEach((btn) => {
+        btn.addEventListener("click", () => addRow(btn.dataset.addRow));
+      });
+
+      document.getElementById("save-note").addEventListener("click", saveNote);
+
+      document.getElementById("reset-data").addEventListener("click", () => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
+        location.reload();
+      });
+    </script>
   </body>
 </html>
