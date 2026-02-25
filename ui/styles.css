@@ -17,11 +17,12 @@ body {
 }
 
 .page {
-  max-width: 1060px;
+  max-width: 1160px;
   margin: 0 auto;
   padding: 2rem 1rem 3rem;
 }
 
+/* ── Top bar ──────────────────────────────────────────────────────────────── */
 .topbar {
   display: flex;
   justify-content: space-between;
@@ -52,13 +53,21 @@ h1 {
   border-radius: 8px;
   padding: .5rem .8rem;
   cursor: pointer;
+  font-size: .85rem;
+  color: var(--muted);
+  white-space: nowrap;
 }
+.ghost-btn:hover { background: #f0efec; }
 
+/* ── Quick nav cards ──────────────────────────────────────────────────────── */
 .quick-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: .6rem;
   margin: 1rem 0 1.4rem;
+  text-decoration: none;
+  list-style: none;
+  padding: 0;
 }
 
 .quick-card {
@@ -69,27 +78,83 @@ h1 {
   border-radius: 10px;
   padding: .75rem .85rem;
   font-weight: 600;
+  font-size: .9rem;
 }
+.quick-card:hover { background: #f3f2ef; }
 
+/* ── Database section ─────────────────────────────────────────────────────── */
 .database {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 12px;
-  padding: .9rem;
+  padding: 1rem;
   margin-bottom: .9rem;
+}
+
+.db-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: .8rem;
 }
 
 h2 {
   font-size: 1.04rem;
-  margin: 0;
+  margin: 0 0 .2rem;
 }
 
 .hint {
-  margin: .3rem 0 .8rem;
+  margin: 0;
   color: var(--muted);
-  font-size: .92rem;
+  font-size: .88rem;
 }
 
+.empty-hint {
+  margin: .6rem 0 .2rem;
+  color: var(--muted);
+  font-size: .88rem;
+  font-style: italic;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+.add-btn {
+  flex-shrink: 0;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: .38rem .7rem;
+  font-size: .83rem;
+  cursor: pointer;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.add-btn:hover {
+  background: #f0efec;
+  color: var(--text);
+}
+
+.del-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #c0bbb5;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0;
+}
+.del-btn:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* ── Table ────────────────────────────────────────────────────────────────── */
 .table-wrap {
   overflow-x: auto;
 }
@@ -97,55 +162,130 @@ h2 {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 880px;
 }
 
-th,
-td {
+th, td {
   border-bottom: 1px solid var(--line);
-  padding: .5rem;
+  padding: .42rem .4rem;
   text-align: left;
   vertical-align: middle;
+  white-space: nowrap;
 }
+
+td { white-space: normal; }
 
 th {
   color: var(--muted);
   font-weight: 600;
-  font-size: .85rem;
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: .03em;
 }
 
-input {
+tr:last-child td { border-bottom: none; }
+
+/* ── Inputs ───────────────────────────────────────────────────────────────── */
+input[type="text"],
+input[type="date"] {
   width: 100%;
   border: 1px solid transparent;
   background: transparent;
   border-radius: 6px;
-  padding: .35rem .45rem;
+  padding: .3rem .4rem;
   color: var(--text);
+  font-size: .88rem;
+  font-family: inherit;
 }
 
-input:focus {
+input[type="text"]:focus,
+input[type="date"]:focus {
   border-color: #c5defd;
   outline: none;
   background: #f6faff;
 }
 
+/* ── Status badge selects ─────────────────────────────────────────────────── */
+.badge-wrap {
+  display: inline-flex;
+  width: 100%;
+}
+
+.badge-wrap select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  border-radius: 999px;
+  padding: .22rem .6rem;
+  font-size: .8rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  width: 100%;
+  min-width: 90px;
+  /* default: neutral */
+  background: #f1f5f9;
+  color: #64748b;
+}
+.badge-wrap select:focus {
+  outline: 2px solid #c5defd;
+  outline-offset: 1px;
+}
+
+/* Paper status */
+.badge-wrap[data-val="Unread"] select   { background: #f1f5f9; color: #64748b; }
+.badge-wrap[data-val="Reading"] select  { background: #dbeafe; color: #1d4ed8; }
+.badge-wrap[data-val="Done"] select     { background: #dcfce7; color: #15803d; }
+
+/* Priority */
+.badge-wrap[data-val="High"] select     { background: #fee2e2; color: #b91c1c; }
+.badge-wrap[data-val="Medium"] select   { background: #fef9c3; color: #a16207; }
+.badge-wrap[data-val="Low"] select      { background: #f0fdf4; color: #15803d; }
+
+/* Todo status — "Not Started" and "In Progress" handled above + Done */
+.badge-wrap[data-val="Not Started"] select  { background: #f1f5f9; color: #64748b; }
+.badge-wrap[data-val="In Progress"] select  { background: #dbeafe; color: #1d4ed8; }
+
+/* Seminar / event type */
+.badge-wrap[data-val="Seminar"] select      { background: #ede9fe; color: #6d28d9; }
+.badge-wrap[data-val="Meeting"] select      { background: #fef3c7; color: #b45309; }
+.badge-wrap[data-val="Workshop"] select     { background: #e0f2fe; color: #0369a1; }
+.badge-wrap[data-val="Conference"] select   { background: #d1fae5; color: #065f46; }
+.badge-wrap[data-val="Job Talk"] select     { background: #fce7f3; color: #9d174d; }
+
+/* Project stage */
+.badge-wrap[data-val="Idea"] select         { background: #ede9fe; color: #6d28d9; }
+.badge-wrap[data-val="Data"] select         { background: #e0f2fe; color: #0369a1; }
+.badge-wrap[data-val="Analysis"] select     { background: #cffafe; color: #155e75; }
+.badge-wrap[data-val="Drafting"] select     { background: #fef3c7; color: #b45309; }
+.badge-wrap[data-val="Submitted"] select    { background: #d1fae5; color: #065f46; }
+.badge-wrap[data-val="Published"] select    { background: #dcfce7; color: #15803d; }
+
+/* ── Open-URL link ────────────────────────────────────────────────────────── */
 .open-link {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
   color: #fff;
   text-decoration: none;
   background: var(--accent);
   border-radius: 6px;
-  padding: .34rem .58rem;
-  font-size: .85rem;
+  font-size: .95rem;
 }
 
 .open-link.disabled {
-  background: #c5c9cf;
+  background: #d4d6da;
   pointer-events: none;
 }
 
+/* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 720px) {
   .topbar {
     flex-direction: column;
+  }
+  .db-header {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
