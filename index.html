@@ -25,60 +25,29 @@
       </section>
 
       <section class="database" id="seminars">
-        <div class="database-head">
-          <div>
-            <h2>Seminar & Discussion Notes</h2>
-            <p class="hint">Edit any cell directly, then click Save note to open details like a Notion sub-page.</p>
-          </div>
-          <button class="add-row" type="button" data-add-row="seminars">+ New row</button>
-        </div>
+        <h2>Seminar & Discussion Notes</h2>
+        <p class="hint">Edit any cell directly. Paste URLs in the URL column, then click Open.</p>
         <div class="table-wrap" id="table-seminars"></div>
       </section>
 
       <section class="database" id="papers">
-        <div class="database-head">
-          <div>
-            <h2>Paper Reading Notes</h2>
-            <p class="hint">Add one row per paper. Save note stores rich details you can reopen later.</p>
-          </div>
-          <button class="add-row" type="button" data-add-row="papers">+ New row</button>
-        </div>
+        <h2>Paper Reading Notes</h2>
+        <p class="hint">Use this as your literature tracker with notes you can revisit quickly.</p>
         <div class="table-wrap" id="table-papers"></div>
       </section>
 
       <section class="database" id="projects">
-        <div class="database-head">
-          <div>
-            <h2>Projects & Working Papers</h2>
-            <p class="hint">Track stage, next milestone, and shared doc links.</p>
-          </div>
-          <button class="add-row" type="button" data-add-row="projects">+ New row</button>
-        </div>
+        <h2>Projects & Working Papers</h2>
+        <p class="hint">Track stage, next milestone, and shared doc links.</p>
         <div class="table-wrap" id="table-projects"></div>
       </section>
 
       <section class="database" id="todos">
-        <div class="database-head">
-          <div>
-            <h2>Todos & Deadlines</h2>
-            <p class="hint">Keep weekly priorities and hard deadlines in one place.</p>
-          </div>
-          <button class="add-row" type="button" data-add-row="todos">+ New row</button>
-        </div>
+        <h2>Todos & Deadlines</h2>
+        <p class="hint">Keep weekly priorities and hard deadlines in one place.</p>
         <div class="table-wrap" id="table-todos"></div>
       </section>
     </main>
-
-    <dialog id="note-dialog">
-      <form method="dialog" class="note-form">
-        <h3 id="note-title">Edit note</h3>
-        <textarea id="note-text" rows="12" placeholder="Write detailed notes here..."></textarea>
-        <div class="dialog-actions">
-          <button id="save-note" type="button" class="primary-btn">Save note</button>
-          <button type="submit" class="ghost-btn">Close</button>
-        </div>
-      </form>
-    </dialog>
 
     <template id="db-template">
       <table>
@@ -89,8 +58,7 @@
             <th>Due / Date</th>
             <th>Notes</th>
             <th>URL</th>
-            <th>Open URL</th>
-            <th>Actions</th>
+            <th>Open</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -98,43 +66,27 @@
     </template>
 
     <script>
-      const STORAGE_KEY = "phd_dashboard_v3";
-      const sections = ["seminars", "papers", "projects", "todos"];
-      const emptyRow = { item: "", status: "", date: "", notes: "", url: "", fullNote: "" };
-
+      const STORAGE_KEY = "phd_dashboard_v2";
       const seed = {
         seminars: [
-          { item: "Macro seminar: labor markets", status: "Planned", date: "", notes: "Add discussant points", url: "", fullNote: "" },
-          { item: "Advisor meeting", status: "Active", date: "", notes: "Bring identification strategy update", url: "", fullNote: "" }
+          { item: "Macro seminar: labor markets", status: "Planned", date: "", notes: "Add discussant points", url: "" },
+          { item: "Advisor meeting", status: "Active", date: "", notes: "Bring identification strategy update", url: "" }
         ],
         papers: [
-          { item: "Autor et al. (2020)", status: "Reading", date: "", notes: "Focus on empirical design", url: "", fullNote: "" },
-          { item: "Chetty et al. (2014)", status: "Done", date: "", notes: "Compare data limitations", url: "", fullNote: "" }
+          { item: "Autor et al. (2020)", status: "Reading", date: "", notes: "Focus on empirical design", url: "" },
+          { item: "Chetty et al. (2014)", status: "Done", date: "", notes: "Compare data limitations", url: "" }
         ],
         projects: [
-          { item: "Job search frictions paper", status: "Drafting", date: "", notes: "Finish robustness table", url: "", fullNote: "" },
-          { item: "Trade shocks project", status: "Data cleaning", date: "", notes: "Merge county panel", url: "", fullNote: "" }
+          { item: "Job search frictions paper", status: "Drafting", date: "", notes: "Finish robustness table", url: "" },
+          { item: "Trade shocks project", status: "Data cleaning", date: "", notes: "Merge county panel", url: "" }
         ],
         todos: [
-          { item: "Submit abstract", status: "High", date: "", notes: "Conference portal", url: "", fullNote: "" },
-          { item: "RA check-in", status: "Medium", date: "", notes: "Share task list", url: "", fullNote: "" }
+          { item: "Submit abstract", status: "High", date: "", notes: "Conference portal", url: "" },
+          { item: "RA check-in", status: "Medium", date: "", notes: "Share task list", url: "" }
         ]
       };
 
-      const dialog = document.getElementById("note-dialog");
-      const noteText = document.getElementById("note-text");
-      const noteTitle = document.getElementById("note-title");
-      let activeNoteRef = null;
-
-      function loadState() {
-        const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || structuredClone(seed);
-        sections.forEach((key) => {
-          stored[key] = Array.isArray(stored[key]) ? stored[key].map((row) => ({ ...emptyRow, ...row })) : [];
-        });
-        return stored;
-      }
-
-      const state = loadState();
+      const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || structuredClone(seed);
 
       function save() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -150,36 +102,6 @@
         }
       }
 
-      function addRow(key) {
-        state[key].push({ ...emptyRow });
-        save();
-        renderAll();
-      }
-
-      function removeRow(key, rowIndex) {
-        state[key].splice(rowIndex, 1);
-        save();
-        renderAll();
-      }
-
-      function openNoteEditor(key, rowIndex) {
-        activeNoteRef = { key, rowIndex };
-        const row = state[key][rowIndex];
-        noteTitle.textContent = `Note: ${row.item || "Untitled item"}`;
-        noteText.value = row.fullNote || "";
-        dialog.showModal();
-      }
-
-      function saveNote() {
-        if (!activeNoteRef) return;
-        const { key, rowIndex } = activeNoteRef;
-        state[key][rowIndex].fullNote = noteText.value;
-        state[key][rowIndex].notes = noteText.value.split("\n")[0].slice(0, 80);
-        save();
-        dialog.close();
-        renderAll();
-      }
-
       function renderTable(mountId, key) {
         const mount = document.getElementById(mountId);
         const tmpl = document.getElementById("db-template").content.firstElementChild.cloneNode(true);
@@ -187,7 +109,6 @@
 
         state[key].forEach((row, rowIndex) => {
           const tr = document.createElement("tr");
-
           ["item", "status", "date", "notes", "url"].forEach((field) => {
             const td = document.createElement("td");
             const input = document.createElement("input");
@@ -217,25 +138,6 @@
           open.className = `open-link ${next ? "" : "disabled"}`;
           openCell.appendChild(open);
           tr.appendChild(openCell);
-
-          const actionsCell = document.createElement("td");
-          actionsCell.className = "actions";
-
-          const noteBtn = document.createElement("button");
-          noteBtn.type = "button";
-          noteBtn.className = "small-btn";
-          noteBtn.textContent = "View note";
-          noteBtn.addEventListener("click", () => openNoteEditor(key, rowIndex));
-
-          const deleteBtn = document.createElement("button");
-          deleteBtn.type = "button";
-          deleteBtn.className = "small-btn danger";
-          deleteBtn.textContent = "Delete";
-          deleteBtn.addEventListener("click", () => removeRow(key, rowIndex));
-
-          actionsCell.appendChild(noteBtn);
-          actionsCell.appendChild(deleteBtn);
-          tr.appendChild(actionsCell);
           tbody.appendChild(tr);
         });
 
@@ -243,20 +145,10 @@
         mount.appendChild(tmpl);
       }
 
-      function renderAll() {
-        renderTable("table-seminars", "seminars");
-        renderTable("table-papers", "papers");
-        renderTable("table-projects", "projects");
-        renderTable("table-todos", "todos");
-      }
-
-      renderAll();
-
-      document.querySelectorAll("[data-add-row]").forEach((btn) => {
-        btn.addEventListener("click", () => addRow(btn.dataset.addRow));
-      });
-
-      document.getElementById("save-note").addEventListener("click", saveNote);
+      renderTable("table-seminars", "seminars");
+      renderTable("table-papers", "papers");
+      renderTable("table-projects", "projects");
+      renderTable("table-todos", "todos");
 
       document.getElementById("reset-data").addEventListener("click", () => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));

@@ -3,6 +3,21 @@
 This is a GitHub-hosted recreation of your Notion-style PhD template interface.
 
 ## Open the interface
+- Primary: [`index.html`](./index.html)
+- Compatibility path: [`phdplanning/index.html`](./phdplanning/index.html)
+
+## If your URL is not working
+Use one of these URL patterns depending on your Pages setup:
+
+1. **Project Pages (repo site):**
+   - `https://<owner>.github.io/phdplanning/`
+   - `https://<owner>.github.io/phdplanning/index.html`
+2. **Custom domain mapped to this repo:**
+   - `https://www.samrudhasurana.com/`
+   - `https://www.samrudhasurana.com/index.html`
+3. **Compatibility alias added in this repo:**
+   - `https://www.samrudhasurana.com/phdplanning/index.html`
+   - This now redirects to `/index.html`.
 - [`index.html`](./index.html)
 
 ## Visit `index.html` using a URL
