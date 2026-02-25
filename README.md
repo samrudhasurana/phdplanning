@@ -18,6 +18,17 @@ Use one of these URL patterns depending on your Pages setup:
 3. **Compatibility alias added in this repo:**
    - `https://www.samrudhasurana.com/phdplanning/index.html`
    - This now redirects to `/index.html`.
+- [`index.html`](./index.html)
+
+## Visit `index.html` using a URL
+If this repo is on GitHub at `https://github.com/<owner>/<repo>`:
+
+1. **File URL (view source on GitHub):**
+   - `https://github.com/<owner>/<repo>/blob/<branch>/index.html`
+2. **GitHub Pages URL (rendered webpage, recommended):**
+   - Enable **Settings → Pages** for this repository.
+   - Then visit: `https://<owner>.github.io/<repo>/`
+   - Or directly: `https://<owner>.github.io/<repo>/index.html`
 
 ## Edit without CLI
 1. Open any page from the dashboard.
