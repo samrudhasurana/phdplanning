@@ -12,88 +12,173 @@
         <div>
           <p class="crumb">Second-year Economics PhD</p>
           <h1>Research Dashboard</h1>
-          <p class="subtitle">A Notion-style workspace for seminars, paper notes, project progress, and deadlines.</p>
+          <p class="subtitle">Notion-style workspace for papers, projects, seminars, and tasks.</p>
         </div>
         <button id="reset-data" class="ghost-btn" type="button">Reset demo data</button>
       </header>
 
-      <section class="quick-grid" aria-label="quick links">
+      <nav class="quick-grid" aria-label="quick links">
+        <a class="quick-card" href="#papers">📚 Paper Notes</a>
+        <a class="quick-card" href="#projects">📈 Working Papers</a>
         <a class="quick-card" href="#seminars">🗒️ Seminar Notes</a>
-        <a class="quick-card" href="#papers">📚 Paper Reading Notes</a>
-        <a class="quick-card" href="#projects">📈 Projects & Papers</a>
-        <a class="quick-card" href="#todos">✅ Todos & Deadlines</a>
-      </section>
+        <a class="quick-card" href="#todos">✅ Tasks</a>
+      </nav>
 
-      <section class="database" id="seminars">
-        <h2>Seminar & Discussion Notes</h2>
-        <p class="hint">Edit any cell directly. Paste URLs in the URL column, then click Open.</p>
-        <div class="table-wrap" id="table-seminars"></div>
-      </section>
-
-      <section class="database" id="papers">
-        <h2>Paper Reading Notes</h2>
-        <p class="hint">Use this as your literature tracker with notes you can revisit quickly.</p>
-        <div class="table-wrap" id="table-papers"></div>
-      </section>
-
-      <section class="database" id="projects">
-        <h2>Projects & Working Papers</h2>
-        <p class="hint">Track stage, next milestone, and shared doc links.</p>
-        <div class="table-wrap" id="table-projects"></div>
-      </section>
-
-      <section class="database" id="todos">
-        <h2>Todos & Deadlines</h2>
-        <p class="hint">Keep weekly priorities and hard deadlines in one place.</p>
-        <div class="table-wrap" id="table-todos"></div>
-      </section>
+      <div id="app"></div>
     </main>
 
-    <template id="db-template">
-      <table>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Status</th>
-            <th>Due / Date</th>
-            <th>Notes</th>
-            <th>URL</th>
-            <th>Open</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </template>
-
     <script>
-      const STORAGE_KEY = "phd_dashboard_v2";
+      const STORAGE_KEY = "phd_dashboard_v3";
+
+      // ── Schema definitions ──────────────────────────────────────────────────
+      const schemas = [
+        {
+          id: "papers",
+          icon: "📚",
+          label: "Paper Reading Notes",
+          hint: "Literature tracker — add papers you are reading or have read.",
+          columns: [
+            { key: "title",   label: "Title",      type: "text",   grow: 2 },
+            { key: "authors", label: "Authors",    type: "text",   grow: 1 },
+            { key: "year",    label: "Year",       type: "text",   width: "62px" },
+            { key: "journal", label: "Journal",    type: "text",   grow: 1 },
+            { key: "status",  label: "Status",     type: "select", options: ["Unread","Reading","Done"] },
+            { key: "notes",   label: "Notes",      type: "text",   grow: 2 },
+            { key: "url",     label: "URL",        type: "url",    grow: 1 }
+          ]
+        },
+        {
+          id: "projects",
+          icon: "📈",
+          label: "Working Papers & Projects",
+          hint: "Track each paper from idea to submission.",
+          columns: [
+            { key: "title",         label: "Title",           type: "text",   grow: 2 },
+            { key: "stage",         label: "Stage",           type: "select", options: ["Idea","Reading","Data","Analysis","Drafting","Submitted","Published"] },
+            { key: "targetJournal", label: "Target Journal",  type: "text",   grow: 1 },
+            { key: "nextMilestone", label: "Next Milestone",  type: "text",   grow: 2 },
+            { key: "due",           label: "Due",             type: "date" },
+            { key: "notes",         label: "Notes",           type: "text",   grow: 2 },
+            { key: "url",           label: "URL",             type: "url",    grow: 1 }
+          ]
+        },
+        {
+          id: "seminars",
+          icon: "🗒️",
+          label: "Seminar & Meeting Notes",
+          hint: "Log talks, advisor meetings, and workshops.",
+          columns: [
+            { key: "event",   label: "Event",    type: "text",   grow: 2 },
+            { key: "date",    label: "Date",     type: "date" },
+            { key: "type",    label: "Type",     type: "select", options: ["Seminar","Meeting","Workshop","Conference","Job Talk"] },
+            { key: "speaker", label: "Speaker",  type: "text",   grow: 1 },
+            { key: "notes",   label: "Notes",    type: "text",   grow: 2 },
+            { key: "url",     label: "URL",      type: "url",    grow: 1 }
+          ]
+        },
+        {
+          id: "todos",
+          icon: "✅",
+          label: "Todos & Deadlines",
+          hint: "Weekly priorities and hard deadlines in one place.",
+          columns: [
+            { key: "task",     label: "Task",     type: "text",   grow: 2 },
+            { key: "priority", label: "Priority", type: "select", options: ["High","Medium","Low"] },
+            { key: "due",      label: "Due",      type: "date" },
+            { key: "status",   label: "Status",   type: "select", options: ["Not Started","In Progress","Done"] },
+            { key: "notes",    label: "Notes",    type: "text",   grow: 2 }
+          ]
+        }
+      ];
+
+      // ── Seed data ───────────────────────────────────────────────────────────
       const seed = {
-        seminars: [
-          { item: "Macro seminar: labor markets", status: "Planned", date: "", notes: "Add discussant points", url: "" },
-          { item: "Advisor meeting", status: "Active", date: "", notes: "Bring identification strategy update", url: "" }
-        ],
         papers: [
-          { item: "Autor et al. (2020)", status: "Reading", date: "", notes: "Focus on empirical design", url: "" },
-          { item: "Chetty et al. (2014)", status: "Done", date: "", notes: "Compare data limitations", url: "" }
+          {
+            title: "Work of the Past, Work of the Future",
+            authors: "Autor, D.",
+            year: "2020",
+            journal: "AEA P&P",
+            status: "Reading",
+            notes: "Focus on empirical design and polarization mechanism",
+            url: ""
+          },
+          {
+            title: "Where is the Land of Opportunity?",
+            authors: "Chetty, R. et al.",
+            year: "2014",
+            journal: "QJE",
+            status: "Done",
+            notes: "Compare data limitations to our context",
+            url: "https://doi.org/10.1093/qje/qju022"
+          }
         ],
         projects: [
-          { item: "Job search frictions paper", status: "Drafting", date: "", notes: "Finish robustness table", url: "" },
-          { item: "Trade shocks project", status: "Data cleaning", date: "", notes: "Merge county panel", url: "" }
+          {
+            title: "Job search frictions and wage dynamics",
+            stage: "Drafting",
+            targetJournal: "JPE",
+            nextMilestone: "Finish robustness table",
+            due: "2026-06-30",
+            notes: "Adviser wants submission by Q4 2026",
+            url: ""
+          },
+          {
+            title: "Trade shocks and regional adjustment",
+            stage: "Data",
+            targetJournal: "AER",
+            nextMilestone: "Merge county panel",
+            due: "2026-09-15",
+            notes: "RA working on Census merge",
+            url: ""
+          }
+        ],
+        seminars: [
+          {
+            event: "Macro seminar — labor markets",
+            date: "2026-03-05",
+            type: "Seminar",
+            speaker: "Jane Doe (MIT)",
+            notes: "Bring identification strategy question",
+            url: ""
+          },
+          {
+            event: "Advisor meeting",
+            date: "2026-02-28",
+            type: "Meeting",
+            speaker: "Prof. Smith",
+            notes: "Discuss robustness checks and timeline",
+            url: ""
+          }
         ],
         todos: [
-          { item: "Submit abstract", status: "High", date: "", notes: "Conference portal", url: "" },
-          { item: "RA check-in", status: "Medium", date: "", notes: "Share task list", url: "" }
+          {
+            task: "Submit conference abstract",
+            priority: "High",
+            due: "2026-03-10",
+            status: "In Progress",
+            notes: "NBER Summer Institute deadline"
+          },
+          {
+            task: "RA weekly check-in",
+            priority: "Medium",
+            due: "2026-02-28",
+            status: "Not Started",
+            notes: "Share updated task list"
+          }
         ]
       };
 
-      const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") || structuredClone(seed);
+      // ── State ───────────────────────────────────────────────────────────────
+      let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null") ||
+                  structuredClone(seed);
 
       function save() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       }
 
       function validUrl(value) {
-        if (!value.trim()) return "";
+        if (!value || !value.trim()) return "";
         try {
           const normalized = value.startsWith("http") ? value : `https://${value}`;
           return new URL(normalized).toString();
@@ -102,57 +187,232 @@
         }
       }
 
-      function renderTable(mountId, key) {
-        const mount = document.getElementById(mountId);
-        const tmpl = document.getElementById("db-template").content.firstElementChild.cloneNode(true);
-        const tbody = tmpl.querySelector("tbody");
+      function blankRow(schema) {
+        const row = {};
+        schema.columns.forEach(col => {
+          row[col.key] = col.type === "select" ? col.options[0] : "";
+        });
+        return row;
+      }
 
-        state[key].forEach((row, rowIndex) => {
-          const tr = document.createElement("tr");
-          ["item", "status", "date", "notes", "url"].forEach((field) => {
-            const td = document.createElement("td");
+      // ── Rendering ───────────────────────────────────────────────────────────
+      function renderAll() {
+        const app = document.getElementById("app");
+        app.innerHTML = "";
+        schemas.forEach(schema => renderSection(schema, app));
+      }
+
+      function renderSection(schema, container) {
+        if (!state[schema.id]) state[schema.id] = [];
+
+        const section = document.createElement("section");
+        section.className = "database";
+        section.id = schema.id;
+
+        // Header row: title + add button
+        const dbHead = document.createElement("div");
+        dbHead.className = "db-header";
+
+        const titleWrap = document.createElement("div");
+        const h2 = document.createElement("h2");
+        h2.textContent = schema.label;
+        const hint = document.createElement("p");
+        hint.className = "hint";
+        hint.textContent = schema.hint;
+        titleWrap.appendChild(h2);
+        titleWrap.appendChild(hint);
+
+        const addBtn = document.createElement("button");
+        addBtn.className = "add-btn";
+        addBtn.textContent = "+ Add row";
+        addBtn.addEventListener("click", () => {
+          state[schema.id].push(blankRow(schema));
+          save();
+          // Re-render only this section
+          const old = document.getElementById(schema.id);
+          const parent = old.parentNode;
+          const next = old.nextSibling;
+          old.remove();
+          const newSection = document.createDocumentFragment();
+          renderSection(schema, newSection);
+          parent.insertBefore(newSection, next);
+          // Focus first input of the new last row
+          const sec = document.getElementById(schema.id);
+          const lastInput = sec.querySelector("tbody tr:last-child td:first-child input");
+          if (lastInput) lastInput.focus();
+        });
+
+        dbHead.appendChild(titleWrap);
+        dbHead.appendChild(addBtn);
+        section.appendChild(dbHead);
+
+        // Table
+        const wrap = document.createElement("div");
+        wrap.className = "table-wrap";
+
+        const table = document.createElement("table");
+        const thead = document.createElement("thead");
+        const headerRow = document.createElement("tr");
+
+        schema.columns.forEach(col => {
+          const th = document.createElement("th");
+          th.textContent = col.label;
+          if (col.width) th.style.width = col.width;
+          headerRow.appendChild(th);
+        });
+
+        const hasUrl = schema.columns.some(c => c.type === "url");
+        if (hasUrl) {
+          const openTh = document.createElement("th");
+          openTh.style.width = "46px";
+          headerRow.appendChild(openTh);
+        }
+
+        const delTh = document.createElement("th");
+        delTh.style.width = "32px";
+        headerRow.appendChild(delTh);
+
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement("tbody");
+        state[schema.id].forEach((row, i) => {
+          tbody.appendChild(buildRow(schema, row, i));
+        });
+        table.appendChild(tbody);
+        wrap.appendChild(table);
+        section.appendChild(wrap);
+
+        // Empty-state row
+        if (state[schema.id].length === 0) {
+          const empty = document.createElement("p");
+          empty.className = "empty-hint";
+          empty.textContent = "No entries yet. Click \"+ Add row\" to get started.";
+          wrap.appendChild(empty);
+        }
+
+        container.appendChild(section);
+      }
+
+      function buildRow(schema, row, rowIndex) {
+        const tr = document.createElement("tr");
+        let openLink = null;
+
+        schema.columns.forEach(col => {
+          const td = document.createElement("td");
+          if (col.grow) td.style.minWidth = `${col.grow * 110}px`;
+
+          if (col.type === "select") {
+            const badge = document.createElement("div");
+            badge.className = "badge-wrap";
+            const val = row[col.key] || col.options[0];
+            badge.dataset.val = val;
+
+            const sel = document.createElement("select");
+            col.options.forEach(opt => {
+              const option = document.createElement("option");
+              option.value = opt;
+              option.textContent = opt;
+              if (val === opt) option.selected = true;
+              sel.appendChild(option);
+            });
+            sel.addEventListener("change", e => {
+              state[schema.id][rowIndex][col.key] = e.target.value;
+              badge.dataset.val = e.target.value;
+              save();
+            });
+            badge.appendChild(sel);
+            td.appendChild(badge);
+
+          } else if (col.type === "date") {
             const input = document.createElement("input");
-            input.value = row[field] || "";
-            input.type = field === "date" ? "date" : "text";
-            input.placeholder = field === "url" ? "https://..." : "";
-            input.addEventListener("input", (e) => {
-              state[key][rowIndex][field] = e.target.value;
-              if (field === "url") {
-                const next = validUrl(e.target.value);
-                open.href = next || "#";
-                open.classList.toggle("disabled", !next);
+            input.type = "date";
+            input.value = row[col.key] || "";
+            input.addEventListener("change", e => {
+              state[schema.id][rowIndex][col.key] = e.target.value;
+              save();
+            });
+            td.appendChild(input);
+
+          } else if (col.type === "url") {
+            const input = document.createElement("input");
+            input.type = "text";
+            input.placeholder = "https://…";
+            input.value = row[col.key] || "";
+            input.addEventListener("input", e => {
+              state[schema.id][rowIndex][col.key] = e.target.value;
+              const href = validUrl(e.target.value);
+              if (openLink) {
+                openLink.href = href || "#";
+                openLink.classList.toggle("disabled", !href);
               }
               save();
             });
             td.appendChild(input);
-            tr.appendChild(td);
-          });
 
-          const openCell = document.createElement("td");
-          const open = document.createElement("a");
-          const next = validUrl(row.url || "");
-          open.href = next || "#";
-          open.target = "_blank";
-          open.rel = "noreferrer";
-          open.textContent = "Open";
-          open.className = `open-link ${next ? "" : "disabled"}`;
-          openCell.appendChild(open);
-          tr.appendChild(openCell);
-          tbody.appendChild(tr);
+          } else {
+            const input = document.createElement("input");
+            input.type = "text";
+            input.value = row[col.key] || "";
+            input.addEventListener("input", e => {
+              state[schema.id][rowIndex][col.key] = e.target.value;
+              save();
+            });
+            td.appendChild(input);
+          }
+
+          tr.appendChild(td);
         });
 
-        mount.innerHTML = "";
-        mount.appendChild(tmpl);
+        // Open link cell
+        const hasUrl = schema.columns.some(c => c.type === "url");
+        if (hasUrl) {
+          const openTd = document.createElement("td");
+          const link = document.createElement("a");
+          const href = validUrl(row.url || "");
+          link.href = href || "#";
+          link.target = "_blank";
+          link.rel = "noreferrer";
+          link.textContent = "↗";
+          link.title = "Open URL";
+          link.className = `open-link ${href ? "" : "disabled"}`;
+          openLink = link;
+          openTd.appendChild(link);
+          tr.appendChild(openTd);
+        }
+
+        // Delete cell
+        const delTd = document.createElement("td");
+        const delBtn = document.createElement("button");
+        delBtn.className = "del-btn";
+        delBtn.textContent = "×";
+        delBtn.title = "Delete row";
+        delBtn.addEventListener("click", () => {
+          state[schema.id].splice(rowIndex, 1);
+          save();
+          // Re-render this section in place
+          const old = document.getElementById(schema.id);
+          const parent = old.parentNode;
+          const next = old.nextSibling;
+          old.remove();
+          const frag = document.createDocumentFragment();
+          renderSection(schema, frag);
+          parent.insertBefore(frag, next);
+        });
+        delTd.appendChild(delBtn);
+        tr.appendChild(delTd);
+
+        return tr;
       }
 
-      renderTable("table-seminars", "seminars");
-      renderTable("table-papers", "papers");
-      renderTable("table-projects", "projects");
-      renderTable("table-todos", "todos");
+      // ── Boot ────────────────────────────────────────────────────────────────
+      renderAll();
 
       document.getElementById("reset-data").addEventListener("click", () => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
-        location.reload();
+        if (confirm("Reset all data to the demo state? This cannot be undone.")) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(structuredClone(seed)));
+          location.reload();
+        }
       });
     </script>
   </body>
